@@ -1,0 +1,89 @@
+
+package codigo;
+
+import java_cup.runtime.Symbol;
+
+parser code
+{:
+    private Symbol s;
+    
+    public void syntax_error(Symbol s){
+        System.out.println("Error de sintaxis en linea: " + s.left + " columna: " + s.right);
+    }
+
+    public Symbol getS(){
+        return this.s;
+}
+:};
+
+terminal   Tip_dato,Byte,Int,Char,Long,Float,Double, Cadena, If, Else, Do, While, For, Igual, Suma,
+           Resta, Multiplicacion,Division,logico,relacional,atribucion,
+           increment_decrement,booleano,Parent_a,Parent_c,Lla_a,Lla_c,
+           Corch_a,Corch_c,Main,Punt_coma,Linea,Comillas,Identificador,
+           Numero,ERROR;
+    non terminal INICIO, SENTENCIA, DECLARACION, DECLARACION_FOR, IF, IF_ELSE,
+    WHILE, DO_WHILE, FOR, SENTENCIA_BOOLEANA, SENTENCIA_FOR;
+
+start with INICIO;
+
+INICIO ::= Int Main Parent_a Parent_c Lla_a SENTENCIA Lla_c
+;
+SENTENCIA ::= Int Identificador Punt_coma  Int Identificador | Igual Numero Punt_coma
+;
+
+SENTENCIA ::= 
+    SENTENCIA DECLARACION |
+    DECLARACION |
+    SENTENCIA IF | 
+    IF |
+    SENTENCIA IF_ELSE |
+    IF_ELSE |
+    SENTENCIA WHILE |
+    WHILE |
+    SENTENCIA DO_WHILE
+    DO_WHILE |
+    SENTENCIA FOR |
+    FOR
+
+DECLARACION ::= 
+    Tip_dato Identificador         Punt_coma                                            | 
+    Tip_dato Identificador         atribucion Numero Punt_coma                          |
+    Tip_dato Identificador         Igual Numero Punt_coma                               |
+    Tip_dato Identificador         increment_decrement Punt_coma                        | 
+    Tip_dato increment_decrement   Identificador Punt_coma                              | 
+    Cadena   Identificador         atribucion Comillas Comillas Punt_coma               |
+    Cadena   Identificador         Igual Comillas Comillas Punt_coma                    |
+    Cadena   Identificador         atribucion Comillas Identificador Comillas Punt_coma |
+    Cadena   Identificador         Igual Comillas Identificador Comillas Punt_coma
+;
+
+IF ::= If Parent_a SENTENCIA_BOOLEANA Parent_c Lla_a SENTENCIA Lla_c
+;
+
+SENTENCIA_BOOLEANA ::= 
+    booleano | 
+    Identificador relacional booleano           |
+    Identificador relacional Numero             |
+    Identificador relacional Identificador      |
+    Identificador relacional Comillas Comillas  |
+    Identificador relacional Comillas Identificador Comillas
+;
+
+IF_ELSE ::= If Parent_a SENTENCIA_BOOLEANA Parent_c  Lla_a SENTENCIA Lla_c Else Lla_a SENTENCIA Lla_c
+;
+
+WHILE ::= While Parent_a SENTENCIA_BOOLEANA Parent_c Lla_a  SENTENCIA Lla_c
+;
+DO_WHILE ::= Do Lla_a  SENTENCIA Lla_c While Parent_a  SENTENCIA_BOOLEANA Parent_c  Punt_coma
+;
+FOR ::= For Parent_a SENTENCIA_FOR Parent_c  Lla_a SENTENCIA Lla_c
+;
+SENTENCIA_FOR ::=
+    Tip_dato Identificador Igual Numero Punt_coma SENTENCIA_BOOLEANA Punt_coma DECLARACION_FOR |
+    Identificador Igual Numero Punt_coma SENTENCIA_BOOLEANA Punt_coma DECLARACION_FOR
+;
+DECLARACION_FOR ::= 
+    Identificador       atribucion Numero |
+    Identificador       increment_decrement | 
+    increment_decrement Identificador
+;
